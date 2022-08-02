@@ -1,5 +1,12 @@
 <resources>
-    <style name="Theme.Leancorn" parent="@style/Theme.Leanback">
+    <style name="Theme.apptv" parent="@style/Theme.Leanback">
         <item name="android:colorBackground">@color/cod_gray</item>
+    </style>
+
+    <style name="Theme.Example.LeanbackBrowse" parent="Theme.Leanback.Browse">
+        <item name="android:windowBackground">@color/card_examples_background</item>
+        <item name="defaultSearchColor">@color/search_color</item>
+        <item name="defaultSearchIconColor">@color/search_icon_color</item>
+        <item name="defaultSearchBrightColor">@color/search_bright_color</item>
     </style>
 </resources>

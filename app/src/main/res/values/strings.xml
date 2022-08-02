@@ -15,6 +15,7 @@
 
     <!-- Error messages -->
     <string name="error_fragment_message">An error occurred</string>
+    <string name="implement_search">Implement your own in-app search.</string>
     <string name="dismiss_error">Dismiss</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -27,4 +28,9 @@
     <string name="detail_label_actors">🎭 Actors</string>
     <string name="detail_label_directors">🙌🏻 Directors</string>
     <string name="detail_label_year">🗓 Year</string>
+
+    <!-- Playback error actions -->
+    <string name="retry">Retry</string>
+    <string name="go_back">Return to browsing</string>
+    <string name="error_title_with_video">Something terrible happened with %s</string>
 </resources>

@@ -34,106 +34,163 @@
 
 package com.zemoga.apptvdemo.ui.feature.playback
 
+import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import androidx.leanback.media.MediaPlayerAdapter
 import androidx.leanback.media.PlaybackTransportControlGlue
+import androidx.leanback.media.PlayerAdapter
 import androidx.leanback.widget.Action
 import androidx.leanback.widget.ArrayObjectAdapter
 import androidx.leanback.widget.PlaybackControlsRow
-import androidx.leanback.widget.PlaybackRowPresenter
+import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter
 import java.util.concurrent.TimeUnit
 
-class VideoPlaybackControlGlue(context: Context, mediaPlayerAdapter: MediaPlayerAdapter) :
-    PlaybackTransportControlGlue<MediaPlayerAdapter>(context,mediaPlayerAdapter) {
+/**
+ * Custom [PlaybackTransportControlGlue] that exposes a callback when the progress is updated.
+ *
+ * The callback is triggered based on a progress interval defined in several ways depending on the
+ * [PlayerAdapter].
+ *
+ * [LeanbackPlayerAdapter] example:
+ * ```
+ *     private val updateMillis = 16
+ *     LeanbackPlayerAdapter(context, exoplayer, updateMillis)
+ * ```
+ *
+ * [MediaPlayerAdapter] example:
+ * ```
+ *     object : MediaPlayerAdapter(context) {
+ *         private val updateMillis = 16
+ *         override fun getProgressUpdatingInterval(): Int {
+ *             return updateMillis
+ *         }
+ *     }
+ * ```
+ */
+class VideoPlaybackControlGlue<T : PlayerAdapter>(
+    activity: Activity,
+    context: Context,
+    impl: T,
+    private val updateProgress: () -> Unit
+) : PlaybackTransportControlGlue<T>(context, impl) {
 
-  @VisibleForTesting
-  private lateinit var repeatAction: PlaybackControlsRow.RepeatAction
-  @VisibleForTesting
-  private lateinit var pipAction: PlaybackControlsRow.PictureInPictureAction
-  @VisibleForTesting
-  private lateinit var thumbsUpAction: PlaybackControlsRow.ThumbsUpAction
-  @VisibleForTesting
-  private lateinit var thumbsDownAction: PlaybackControlsRow.ThumbsDownAction
-  @VisibleForTesting
-  private lateinit var skipPreviousAction: PlaybackControlsRow.SkipPreviousAction
-  @VisibleForTesting
-  private lateinit var skipNextAction: PlaybackControlsRow.SkipNextAction
-  @VisibleForTesting
-  private lateinit var fastForwardAction: PlaybackControlsRow.FastForwardAction
-  @VisibleForTesting
-  private lateinit var rewindAction: PlaybackControlsRow.RewindAction
+    @VisibleForTesting
+    private lateinit var repeatAction: PlaybackControlsRow.RepeatAction
 
-  override fun onCreatePrimaryActions(primaryActionsAdapter: ArrayObjectAdapter?) {
-    super.onCreatePrimaryActions(primaryActionsAdapter)
+    var activity: Activity = activity
 
-    skipPreviousAction = PlaybackControlsRow.SkipPreviousAction(context)
-    rewindAction = PlaybackControlsRow.RewindAction(context)
-    fastForwardAction = PlaybackControlsRow.FastForwardAction(context)
-    skipNextAction = PlaybackControlsRow.SkipNextAction(context)
-    thumbsUpAction = PlaybackControlsRow.ThumbsUpAction(context)
-    thumbsDownAction = PlaybackControlsRow.ThumbsDownAction(context)
-    repeatAction = PlaybackControlsRow.RepeatAction(context)
-    pipAction = PlaybackControlsRow.PictureInPictureAction(context)
+    @VisibleForTesting
+    private lateinit var pipAction: PlaybackControlsRow.PictureInPictureAction
 
-    primaryActionsAdapter?.apply {
-      add(skipPreviousAction)
-      add(rewindAction)
-      add(fastForwardAction)
-      add(skipNextAction)
+    @VisibleForTesting
+    private lateinit var thumbsUpAction: PlaybackControlsRow.ThumbsUpAction
+
+    @VisibleForTesting
+    private lateinit var thumbsDownAction: PlaybackControlsRow.ThumbsDownAction
+
+    @VisibleForTesting
+    private lateinit var skipPreviousAction: PlaybackControlsRow.SkipPreviousAction
+
+    @VisibleForTesting
+    private lateinit var skipNextAction: PlaybackControlsRow.SkipNextAction
+
+    @VisibleForTesting
+    private lateinit var fastForwardAction: PlaybackControlsRow.FastForwardAction
+
+    @VisibleForTesting
+    private lateinit var rewindAction: PlaybackControlsRow.RewindAction
+
+
+    override fun onCreatePrimaryActions(primaryActionsAdapter: ArrayObjectAdapter?) {
+        // super.onCreatePrimaryActions() will create the play / pause action.
+        super.onCreatePrimaryActions(primaryActionsAdapter)
+
+        skipPreviousAction = PlaybackControlsRow.SkipPreviousAction(context)
+        rewindAction = PlaybackControlsRow.RewindAction(context)
+        fastForwardAction = PlaybackControlsRow.FastForwardAction(context)
+        skipNextAction = PlaybackControlsRow.SkipNextAction(context)
+        thumbsUpAction = PlaybackControlsRow.ThumbsUpAction(context)
+        thumbsUpAction.index = PlaybackControlsRow.ThumbsUpAction.INDEX_OUTLINE
+        thumbsDownAction = PlaybackControlsRow.ThumbsDownAction(context)
+        thumbsDownAction.index = PlaybackControlsRow.ThumbsDownAction.INDEX_OUTLINE
+        repeatAction = PlaybackControlsRow.RepeatAction(context)
+        pipAction = PlaybackControlsRow.PictureInPictureAction(context)
+
+
+        // Add the rewind and fast forward actions following the play / pause action.
+        primaryActionsAdapter?.apply {
+            add(skipPreviousAction)
+            add(rewindAction)
+            add(fastForwardAction)
+            add(skipNextAction)
+        }
     }
-  }
 
-  override fun onCreateSecondaryActions(secondaryActionsAdapter: ArrayObjectAdapter?) {
-    super.onCreateSecondaryActions(secondaryActionsAdapter)
-    secondaryActionsAdapter?.apply {
-      add(thumbsDownAction)
-      add(thumbsUpAction)
+
+    override fun onUpdateProgress() {
+        super.onUpdateProgress()
+        updateProgress()
     }
-  }
 
-  override fun next() {
-    super.next()
-    playerAdapter.next()
-  }
-
-  override fun previous() {
-    super.previous()
-    playerAdapter.previous()
-  }
-
-  override fun onActionClicked(action: Action?) {
-    Log.d("--->LOG PRESSED ", action.toString())
-    when(action) {
-      rewindAction -> {
-        Log.d("REWIND---> ", action.toString())
-        skipBackward()
-      }
-      fastForwardAction -> {
-        Log.d("FASTFORWARD---> ", action.toString())
-        skipForward()
-      }
-      else -> super.onActionClicked(action)
+    override fun onCreateSecondaryActions(secondaryActionsAdapter: ArrayObjectAdapter?) {
+        super.onCreateSecondaryActions(secondaryActionsAdapter)
+        secondaryActionsAdapter?.apply {
+            add(thumbsDownAction)
+            add(thumbsUpAction)
+        }
+        if (Build.VERSION.SDK_INT > 23) {
+            secondaryActionsAdapter?.add(pipAction)
+        }
     }
-  }
 
-  /** Skips backward 30 seconds.  */
-  private fun skipBackward() {
-    var newPosition: Long = currentPosition - THIRTY_SECONDS
-    newPosition = newPosition.coerceAtLeast(0L)
-    playerAdapter.seekTo(newPosition)
-  }
+    override fun next() {
+        super.next()
+        playerAdapter.next()
+    }
 
-  /** Skips forward 30 seconds.  */
-  private fun skipForward() {
-    var newPosition: Long = currentPosition + THIRTY_SECONDS
-    newPosition = newPosition.coerceAtMost(duration)
-    playerAdapter.seekTo(newPosition)
-  }
+    override fun previous() {
+        super.previous()
+        playerAdapter.previous()
+    }
 
-  companion object {
-    private val THIRTY_SECONDS = TimeUnit.SECONDS.toMillis(30)
-  }
+    override fun onActionClicked(action: Action?) {
+        Log.d("--->LOG PRESSED ", action.toString())
+        when (action) {
+            rewindAction -> {
+                Log.d("REWIND---> ", action.toString())
+                skipBackward()
+            }
+            fastForwardAction -> {
+                Log.d("FASTFORWARD---> ", action.toString())
+                skipForward()
+            }
+            pipAction -> {
+                Log.d("PIP---> ", action.toString())
+                activity.enterPictureInPictureMode()
+            }
+            else -> super.onActionClicked(action)
+        }
+    }
+
+    /** Skips backward 30 seconds.  */
+    private fun skipBackward() {
+        var newPosition: Long = currentPosition - THIRTY_SECONDS
+        newPosition = newPosition.coerceAtLeast(0L)
+        playerAdapter.seekTo(newPosition)
+    }
+
+    /** Skips forward 30 seconds.  */
+    private fun skipForward() {
+        var newPosition: Long = currentPosition + THIRTY_SECONDS
+        newPosition = newPosition.coerceAtMost(duration)
+        playerAdapter.seekTo(newPosition)
+    }
+
+    companion object {
+        private val THIRTY_SECONDS = TimeUnit.SECONDS.toMillis(30)
+    }
 
 }

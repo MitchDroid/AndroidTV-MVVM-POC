@@ -1,5 +1,6 @@
 package com.zemoga.apptvdemo.ui.feature.detail
 
+import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.zemoga.apptvdemo.R
@@ -14,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle
+    bundle: Bundle
 ) : ViewModel() {
 
     private val _args = MutableStateFlow<DetailFragmentArgs?>(null)
@@ -30,7 +31,7 @@ class DetailViewModel @Inject constructor(
     val navigateToPlayback = _navigateToPlayback.asSharedFlow()
 
     init {
-        val parsedArgs = DetailFragmentArgs.fromSavedStateHandle(savedStateHandle)
+        val parsedArgs = DetailFragmentArgs.fromBundle(bundle)
         _args.tryEmit(parsedArgs)
     }
 
@@ -46,7 +47,6 @@ class DetailViewModel @Inject constructor(
 
     fun onRateClicked() {
         _toast.tryEmit(R.string.detail_rate)
-
     }
 
     fun onMovieClicked(movie: Movie) {

@@ -5,13 +5,17 @@ import android.os.Bundle
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.widget.Toast
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.leanback.app.BackgroundManager
 import androidx.leanback.app.BrowseSupportFragment
+import androidx.leanback.app.BrowseSupportFragment.HEADERS_ENABLED
 import androidx.leanback.widget.*
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.palette.graphics.Palette
 import coil.compose.AsyncImage
@@ -25,6 +29,7 @@ import com.zemoga.apptvdemo.util.Resource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import kotlin.math.log
 import kotlin.properties.Delegates
 
@@ -54,14 +59,17 @@ class HomeFragment : BrowseSupportFragment() {
         sSelectedBackgroundColor =
             ContextCompat.getColor(requireContext(), R.color.selected_background)
 
-        title = getString(R.string.app_name)
         // over title
-        headersState = BrowseSupportFragment.HEADERS_ENABLED
+        headersState = HEADERS_ENABLED
         isHeadersTransitionOnBackEnabled = true
+
+        title = getString(R.string.app_name)
+
         // set fastLane (or headers) background color
-        brandColor = ContextCompat.getColor(requireContext(), R.color.fastlane_background)
+        //brandColor = ContextCompat.getColor(requireContext(), R.color.fastlane_background)
         // set search icon color
         searchAffordanceColor = ContextCompat.getColor(requireContext(), R.color.search_opaque)
+
 
     }
 
@@ -72,6 +80,15 @@ class HomeFragment : BrowseSupportFragment() {
         setOnItemViewClickedListener { _, item, _, _ ->
             item as Movie
             viewModel.onMovieClicked(item)
+        }
+
+        setOnSearchClickedListener {
+            viewModel.onSearchClicked()
+        }
+
+
+        viewModel.toast.asLiveData().observe(viewLifecycleOwner) { stringRes ->
+            Toast.makeText(requireContext(), stringRes, Toast.LENGTH_SHORT).show()
         }
 
         setDynamicBackground()
@@ -135,15 +152,15 @@ class HomeFragment : BrowseSupportFragment() {
                             backgroundManager.drawable = it
                         }
 
-                       /* if ((itemViewHolder.view as ImageCardView).isFocused) {
-                            (itemViewHolder.view as ImageCardView).setInfoAreaBackgroundColor(
-                                sSelectedBackgroundColor
-                            )
-                        } else {
-                            (itemViewHolder.view as ImageCardView).setInfoAreaBackgroundColor(
-                                sDefaultBackgroundColor
-                            )
-                        }*/
+                        /* if ((itemViewHolder.view as ImageCardView).isFocused) {
+                             (itemViewHolder.view as ImageCardView).setInfoAreaBackgroundColor(
+                                 sSelectedBackgroundColor
+                             )
+                         } else {
+                             (itemViewHolder.view as ImageCardView).setInfoAreaBackgroundColor(
+                                 sDefaultBackgroundColor
+                             )
+                         }*/
 
                     }
                 }
@@ -191,7 +208,7 @@ class HomeFragment : BrowseSupportFragment() {
     companion object {
 
         private const val BACKGROUND_UPDATE_DELAY = 300L
-
+        private const val SHARED_ELEMENT_NAME = "transition"
         const val REQUEST_AUTHORIZATION = 1001
         const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
     }

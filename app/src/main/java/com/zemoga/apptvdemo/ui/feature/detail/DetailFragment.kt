@@ -24,7 +24,7 @@ class DetailFragment : DetailsSupportFragment() {
     companion object {
         private const val ACTION_PLAY = 1L
         private const val ACTION_RATE = 2L
-        private const val SHARED_ELEMENT_NAME = "hero"
+        private const val SHARED_ELEMENT_NAME = "transition"
     }
 
     val viewModel: DetailViewModel by viewModels()
@@ -141,6 +141,7 @@ class DetailFragment : DetailsSupportFragment() {
     private fun createRowsAdapter(): ArrayObjectAdapter {
         val rowPresenterSelector = ClassPresenterSelector()
         val detailsOverviewRowPresenter = FullWidthDetailsOverviewRowPresenter(DetailPresenter())
+
         val sharedElementHelper = FullWidthDetailsOverviewSharedElementHelper()
         sharedElementHelper.setSharedElementEnterTransition(requireActivity(), SHARED_ELEMENT_NAME)
 

@@ -12,7 +12,7 @@ android {
 
     defaultConfig {
         applicationId "com.zemoga.apptvdemo"
-        minSdk 21
+        minSdk 25
         targetSdk 31
         versionCode 20211010
         versionName "0.0.1"
@@ -40,8 +40,12 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
+    implementation 'com.google.android.gms:play-services-location:20.0.0'
+    implementation 'com.google.android.gms:play-services-cast:19.0.1'
+    implementation 'com.google.android.gms:play-services-cast-framework:21.0.1'
     //ROOM
     implementation "androidx.room:room-runtime:$room_version"
+    implementation 'com.google.android.gms:play-services-cast-tv:19.0.1'
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
 

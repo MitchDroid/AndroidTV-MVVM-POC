@@ -1,7 +1,13 @@
 package com.zemoga.apptvdemo.ui.feature.home
 
+import android.app.Activity
+import android.content.Context
+import android.os.Bundle
+import androidx.core.app.ActivityOptionsCompat
+import androidx.leanback.widget.ImageCardView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.zemoga.apptvdemo.R
 import com.zemoga.apptvdemo.data.local.Category
 import com.zemoga.apptvdemo.data.remote.Movie
 import com.zemoga.apptvdemo.data.repo.MoviesRepo
@@ -22,6 +28,9 @@ class HomeViewModel @Inject constructor(
     private val _moviesResponse =
         MutableStateFlow<Resource<List<Category>>>(Resource.Idle())
     val moviesResponse = _moviesResponse.asStateFlow()
+
+    private val _toast = mutableEventFlow<Int>()
+    val toast = _toast.asSharedFlow()
 
     private val _navigateToDetail = mutableEventFlow<DetailFragmentArgs>()
     val navigateToDetail = _navigateToDetail.asSharedFlow()
@@ -70,6 +79,7 @@ class HomeViewModel @Inject constructor(
     }
 
     var scrollPos: Pair<Int, Int>? = null
+
     fun onMovieClicked(movie: Movie) {
         if (moviesResponse.value is Resource.Success) {
             val categories = (moviesResponse.value as Resource.Success<List<Category>>).data
@@ -86,6 +96,10 @@ class HomeViewModel @Inject constructor(
 
             scrollPos = Pair(catPos, moviePos)
         }
+    }
+
+    fun onSearchClicked(){
+        _toast.tryEmit(R.string.implement_search)
     }
 
 
