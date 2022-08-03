@@ -3,29 +3,22 @@ package com.zemoga.apptvdemo.ui.feature.home
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.DisplayMetrics
-import android.util.Log
 import android.view.View
+import android.widget.Toast
+import androidx.core.app.ActivityOptionsCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.leanback.app.BackgroundManager
 import androidx.leanback.app.BrowseSupportFragment
 import androidx.leanback.widget.*
 import androidx.lifecycle.asLiveData
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.palette.graphics.Palette
-import coil.compose.AsyncImage
-import coil.imageLoader
-import coil.request.ImageRequest
-import coil.size.Scale
 import com.zemoga.apptvdemo.R
 import com.zemoga.apptvdemo.data.local.Category
 import com.zemoga.apptvdemo.data.remote.Movie
 import com.zemoga.apptvdemo.util.Resource
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.math.log
 import kotlin.properties.Delegates
 
 
@@ -35,6 +28,7 @@ class HomeFragment : BrowseSupportFragment() {
     private val viewModel: HomeViewModel by viewModels()
     private var sSelectedBackgroundColor: Int by Delegates.notNull()
     private var sDefaultBackgroundColor: Int by Delegates.notNull()
+    private var mBundle: Bundle? = null
 
     private val backgroundManager by lazy {
         BackgroundManager.getInstance(requireActivity()).apply {
@@ -59,7 +53,7 @@ class HomeFragment : BrowseSupportFragment() {
         headersState = BrowseSupportFragment.HEADERS_ENABLED
         isHeadersTransitionOnBackEnabled = true
         // set fastLane (or headers) background color
-        brandColor = ContextCompat.getColor(requireContext(), R.color.fastlane_background)
+        //brandColor = ContextCompat.getColor(requireContext(), R.color.fastlane_background)
         // set search icon color
         searchAffordanceColor = ContextCompat.getColor(requireContext(), R.color.search_opaque)
 
@@ -69,11 +63,19 @@ class HomeFragment : BrowseSupportFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         observeData()
+
+        viewModel.toast.asLiveData().observe(viewLifecycleOwner) { stringRes ->
+            Toast.makeText(requireContext(), stringRes, Toast.LENGTH_SHORT).show()
+        }
+
         setOnItemViewClickedListener { _, item, _, _ ->
             item as Movie
             viewModel.onMovieClicked(item)
         }
 
+        setOnSearchClickedListener {
+            viewModel.onSearchClicked()
+        }
         setDynamicBackground()
     }
 
@@ -95,12 +97,11 @@ class HomeFragment : BrowseSupportFragment() {
         }
 
         viewModel.navigateToDetail.asLiveData().observe(viewLifecycleOwner) {
-            findNavController().navigate(
-                HomeFragmentDirections.actionHomeToDetail(
-                    it.category,
-                    it.movie
-                )
+            val action = HomeFragmentDirections.actionHomeToDetail(
+                it.category, it.movie
             )
+            findNavController().navigate(action)
+
         }
     }
 
@@ -113,29 +114,29 @@ class HomeFragment : BrowseSupportFragment() {
             display?.getRealMetrics(outMetrics)
         } else {
             @Suppress("DEPRECATION")
-            val display = requireActivity()?.windowManager.defaultDisplay
+            val display = requireActivity()?.windowManager?.defaultDisplay
             @Suppress("DEPRECATION")
-            display.getMetrics(outMetrics)
+            display?.getMetrics(outMetrics)
         }
 
-        onItemViewSelectedListener =
-            OnItemViewSelectedListener { itemViewHolder, item, rowViewHolder, row ->
-                if (item is Movie) {
-                    viewLifecycleOwner.lifecycleScope.launch {
-                        delay(BACKGROUND_UPDATE_DELAY)
-                        val imageRequest = ImageRequest.Builder(requireContext())
-                            .data(item.imageUrl)
-                            .crossfade(true)
-                            .placeholder(R.drawable.default_background)
-                            .scale(Scale.FIT)
-                            .build()
+        /* onItemViewSelectedListener =
+             OnItemViewSelectedListener { itemViewHolder, item, rowViewHolder, row ->
+                 if (item is Movie) {
+                     viewLifecycleOwner.lifecycleScope.launch {
+                         delay(BACKGROUND_UPDATE_DELAY)
+                         val imageRequest = ImageRequest.Builder(requireContext())
+                             .data(item.imageUrl)
+                             .crossfade(true)
+                             .placeholder(R.drawable.default_background)
+                             .scale(Scale.FIT)
+                             .build()
 
-                        Log.d("----->LOG<-------", "viewed item in presenter")
-                        requireContext().imageLoader.execute(imageRequest).drawable?.let {
-                            backgroundManager.drawable = it
-                        }
+                         Log.d("----->LOG<-------", "viewed item in presenter")
+                         requireContext().imageLoader.execute(imageRequest).drawable?.let {
+                             backgroundManager.drawable = it
+                         }
 
-                       /* if ((itemViewHolder.view as ImageCardView).isFocused) {
+                        *//* if ((itemViewHolder.view as ImageCardView).isFocused) {
                             (itemViewHolder.view as ImageCardView).setInfoAreaBackgroundColor(
                                 sSelectedBackgroundColor
                             )
@@ -143,26 +144,27 @@ class HomeFragment : BrowseSupportFragment() {
                             (itemViewHolder.view as ImageCardView).setInfoAreaBackgroundColor(
                                 sDefaultBackgroundColor
                             )
-                        }*/
+                        }*//*
 
                     }
                 }
-            }
+            }*/
 
-        /* setOnItemViewSelectedListener { itemViewHolder, item, _, _ ->
-             if (itemViewHolder?.view != null) {
-                 val bitmapDrawable =
-                     (itemViewHolder.view as ImageCardView).mainImageView.drawable as? BitmapDrawable
-                 if (bitmapDrawable != null) {
-                     Palette.from(bitmapDrawable.bitmap).generate { palette ->
-                         // Priority for vibrantSwatch, if not available dominantSwatch
-                         (palette?.vibrantSwatch ?: palette?.dominantSwatch)?.let { swatch ->
-                             backgroundManager.color = swatch.rgb
-                         }
-                     }
-                 }
-             }
-         }*/
+        onItemViewSelectedListener =
+            OnItemViewSelectedListener { itemViewHolder, item, rowViewHolder, row ->
+                if (itemViewHolder?.view != null) {
+                    val bitmapDrawable =
+                        (itemViewHolder.view as ImageCardView).mainImageView.drawable as? BitmapDrawable
+                    if (bitmapDrawable != null) {
+                        Palette.from(bitmapDrawable.bitmap).generate { palette ->
+                            // Priority for vibrantSwatch, if not available dominantSwatch
+                            (palette?.vibrantSwatch ?: palette?.dominantSwatch)?.let { swatch ->
+                                backgroundManager.color = swatch.rgb
+                            }
+                        }
+                    }
+                }
+            }
     }
 
     private fun displayData(categories: List<Category>) {
@@ -189,10 +191,9 @@ class HomeFragment : BrowseSupportFragment() {
     }
 
     companion object {
-
         private const val BACKGROUND_UPDATE_DELAY = 300L
-
         const val REQUEST_AUTHORIZATION = 1001
         const val REQUEST_GOOGLE_PLAY_SERVICES = 1002
+        const val TRANSITION_NAME = "transition_img"
     }
 }

@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.asLiveData
 import androidx.navigation.NavOptions
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.zemoga.apptvdemo.R
 import com.zemoga.apptvdemo.databinding.FragmentSplashBinding
@@ -17,30 +18,32 @@ import dagger.hilt.android.AndroidEntryPoint
 class SplashFragment : Fragment() {
 
     private val viewModel: SplashViewModel by viewModels()
+    private var _binding: FragmentSplashBinding? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        val binding = FragmentSplashBinding.inflate(inflater, container, false)
+        _binding = FragmentSplashBinding.inflate(inflater, container, false)
 
-        viewModel.shouldGoToHome.asLiveData().observe(viewLifecycleOwner) { shouldGoToHome ->
-            if (shouldGoToHome) {
-                goToHome()
+        viewModel.shouldGoToLogin.asLiveData().observe(viewLifecycleOwner) { shouldGoToLogin ->
+            if (shouldGoToLogin) {
+                goToLogin()
             }
         }
 
-        return binding.root
+        return _binding!!.root
     }
 
-    private fun goToHome() {
-        val action = SplashFragmentDirections.actionSplashToHome()
+    private fun goToLogin() {
+        val action = SplashFragmentDirections.actionSplashToLogin()
+
+        val extras = FragmentNavigatorExtras(
+            _binding!!.ztvLogo to _binding!!.ztvLogo.transitionName,
+        )
         findNavController().navigate(
-            action,
-            NavOptions.Builder()
-                .setPopUpTo(R.id.splash_fragment, true)
-                .build()
+            action,extras
         )
     }
 

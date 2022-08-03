@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">ZemogaAppTV Test</string>
+    <string name="app_name">ZTV App</string>
     <string name="browse_title">Videos by Your Company</string>
     <string name="related_movies">Related Videos</string>
     <string name="grid_view">Grid View</string>
@@ -12,9 +12,11 @@
     <string name="buy_1">Buy and Own</string>
     <string name="buy_2">AT $9.99</string>
     <string name="movie">Movie</string>
+    <string name="search_clicked">Implements your own search view!</string>
 
     <!-- Error messages -->
     <string name="error_fragment_message">An error occurred</string>
+    <string name="implement_search">Implement your own in-app search.</string>
     <string name="dismiss_error">Dismiss</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -27,4 +29,22 @@
     <string name="detail_label_actors">🎭 Actors</string>
     <string name="detail_label_directors">🙌🏻 Directors</string>
     <string name="detail_label_year">🗓 Year</string>
+
+    <!-- Playback error actions -->
+    <string name="retry">Retry</string>
+    <string name="go_back">Return to browsing</string>
+    <string name="error_title_with_video">Something terrible happened with %s</string>
+    <!-- Strings related to login -->
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome!"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="by_zemoga">by Zemoga.</string>
+    <string name="welcome_text">Welcome to the ZTV POC</string>
+    <string name="welcome_decs">Powered by Zemoga. </string>
+    <string name="trannsition_ztv_logo">ztv logo</string>
 </resources>
