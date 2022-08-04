@@ -19,12 +19,13 @@
 - [ ] Write UI tests
 - [ ] Implement room cache (can avoid passing categories and movies to detail)
 - [ ] Code refactor
+- [ ] ROOM
 
 
 ## 📝 License
 
 ```
-Copyright © 2021 - theapache64
+Copyright © 2021 - MitchDroid
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
