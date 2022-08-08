@@ -1,9 +1,6 @@
 package com.zemoga.apptvdemo.ui.feature.home
 
-import android.util.Log
 import android.view.ViewGroup
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.core.content.ContextCompat
 import androidx.leanback.widget.BaseCardView
 import androidx.leanback.widget.ImageCardView
 import androidx.leanback.widget.Presenter
@@ -11,7 +8,6 @@ import coil.load
 import coil.size.Scale
 import com.zemoga.apptvdemo.R
 import com.zemoga.apptvdemo.data.remote.Movie
-import kotlin.properties.Delegates
 
 class PosterPresenter : Presenter() {
     override fun onCreateViewHolder(parent: ViewGroup): ViewHolder {

@@ -1,5 +1,6 @@
 package com.zemoga.apptvdemo.ui.feature.detail
 
+import android.os.Bundle
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.zemoga.apptvdemo.R
@@ -46,7 +47,6 @@ class DetailViewModel @Inject constructor(
 
     fun onRateClicked() {
         _toast.tryEmit(R.string.detail_rate)
-
     }
 
     fun onMovieClicked(movie: Movie) {

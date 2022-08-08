@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="by_zemoga">by Zemoga.</string>
+    <string name="welcome_text">Welcome to the AndroidTV/FireTV POC</string>
+    <string name="welcome_decs">Powered by Zemoga ✅</string>
+    <string name="trannsition_ztv_logo">ztv logo</string>
+</resources>

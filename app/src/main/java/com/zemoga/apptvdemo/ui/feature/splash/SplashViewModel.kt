@@ -12,13 +12,13 @@ import javax.inject.Inject
 @HiltViewModel
 class SplashViewModel @Inject constructor() : ViewModel() {
 
-    private val _shouldGoToHome = mutableEventFlow<Boolean>()
-    val shouldGoToHome = _shouldGoToHome.asSharedFlow()
+    private val _shouldGoToLogin = mutableEventFlow<Boolean>()
+    val shouldGoToLogin = _shouldGoToLogin.asSharedFlow()
 
     init {
         viewModelScope.launch {
-            delay(1500L)
-            _shouldGoToHome.tryEmit(true)
+            delay(2500L)
+            _shouldGoToLogin.tryEmit(true)
         }
     }
 }
