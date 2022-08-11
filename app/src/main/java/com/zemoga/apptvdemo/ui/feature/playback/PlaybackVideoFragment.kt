@@ -15,10 +15,10 @@ import androidx.leanback.widget.PlaybackControlsRow
 import androidx.lifecycle.asLiveData
 import androidx.navigation.fragment.findNavController
 import com.google.android.exoplayer2.*
-import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter
 import com.google.android.exoplayer2.ext.mediasession.MediaSessionConnector
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.upstream.DefaultDataSource
+import com.google.android.exoplayer2.ext.leanback.LeanbackPlayerAdapter
 import com.google.android.gms.cast.tv.CastReceiverContext
 import com.google.android.gms.cast.tv.media.MediaManager
 import com.zemoga.apptvdemo.data.remote.Movie
@@ -97,10 +97,6 @@ class PlaybackVideoFragment : VideoSupportFragment() {
 
     override fun onStart() {
         super.onStart()
-
-        //mMediaManager = CastReceiverContext.getInstance().mediaManager
-        //mMediaManager.setSessionCompatToken(mediaSession.sessionToken)
-
         initializePlayer()
     }
 
@@ -115,7 +111,6 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             prepareGlue(this)
             playWhenReady = true
             hideControlsOverlay(true)
-            //mediaSession.isActive = true
         }
 
         mVideo?.let { VideoPlaybackState.Load(it) }?.let { viewModel.onStateChange(it) }
@@ -137,7 +132,7 @@ class PlaybackVideoFragment : VideoSupportFragment() {
             subtitle = mVideo?.desc
             // Enable seek manually since PlaybackTransportControlGlue.getSeekProvider() is null,
             // so that PlayerAdapter.seekTo(long) will be called during user seeking.
-            // TODO(): Add a PlaybackSeekDataProvider to support video scrubbing.
+            // TODO(): Add a PlaybackSeekDataProvider to support video scrubbing
             isSeekEnabled = true
         }
     }
@@ -145,7 +140,15 @@ class PlaybackVideoFragment : VideoSupportFragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         viewModel.removePlaybackStateListener(uiPlaybackStateListener)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
         //mediaSession.release()
+    }
+
+    override fun onStop() {
+        super.onStop()
         destroyPlayer()
     }
 
@@ -203,6 +206,8 @@ class PlaybackVideoFragment : VideoSupportFragment() {
     private fun createMediaSession() {
         mediaSession = MediaSessionCompat(requireContext(), MEDIA_SESSION_TAG)
         mediaSessionConnector = MediaSessionConnector(mediaSession)
+        CastReceiverContext.getInstance().mediaManager.setSessionCompatToken(
+            mediaSession.sessionToken)
 
     }
 

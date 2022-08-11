@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    bundle: Bundle
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val _args = MutableStateFlow<DetailFragmentArgs?>(null)
@@ -31,7 +31,7 @@ class DetailViewModel @Inject constructor(
     val navigateToPlayback = _navigateToPlayback.asSharedFlow()
 
     init {
-        val parsedArgs = DetailFragmentArgs.fromBundle(bundle)
+        val parsedArgs = DetailFragmentArgs.fromSavedStateHandle(savedStateHandle)
         _args.tryEmit(parsedArgs)
     }
 

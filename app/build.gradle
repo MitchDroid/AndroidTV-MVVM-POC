@@ -29,6 +29,11 @@ android {
     buildFeatures {
         viewBinding true
     }
+
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     namespace 'com.zemoga.apptvdemo'
 }
 
@@ -37,15 +42,15 @@ dependencies {
     // Core
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation 'androidx.leanback:leanback:1.0.0'
-    implementation 'androidx.appcompat:appcompat:1.4.2'
+    implementation 'androidx.appcompat:appcompat:1.5.0'
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 
     implementation 'com.google.android.gms:play-services-location:20.0.0'
-    implementation 'com.google.android.gms:play-services-cast:19.0.1'
-    implementation 'com.google.android.gms:play-services-cast-framework:21.0.1'
+    implementation 'com.google.android.gms:play-services-cast:21.1.0'
+    implementation 'com.google.android.gms:play-services-cast-framework:21.1.0'
     //ROOM
     implementation "androidx.room:room-runtime:$room_version"
-    implementation 'com.google.android.gms:play-services-cast-tv:19.0.1'
+    implementation 'com.google.android.gms:play-services-cast-tv:20.0.0'
     kapt "androidx.room:room-compiler:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
 
@@ -66,9 +71,16 @@ dependencies {
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.13.0'
 
     // Exoplayer for playback
-    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
-    implementation "com.google.android.exoplayer:extension-leanback:$exoplayer_version"
     implementation "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
+    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
+    implementation "com.google.android.exoplayer:exoplayer-dash:$exoplayer_version"
+    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
+    implementation "com.google.android.exoplayer:extension-leanback:$exoplayer_version"
+
+    // Cast library used for Cast Connect feature
+    implementation "com.google.android.gms:play-services-cast-tv:$cast_tv_version"
+    implementation "com.google.android.gms:play-services-cast:$cast_version"
+
 
     // Calligraphy
     implementation 'io.github.inflationx:calligraphy3:3.1.1'

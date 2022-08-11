@@ -130,9 +130,9 @@ class HomeFragment : BrowseSupportFragment() {
             display?.getRealMetrics(outMetrics)
         } else {
             @Suppress("DEPRECATION")
-            val display = requireActivity()?.windowManager.defaultDisplay
+            val display = requireActivity()?.windowManager?.defaultDisplay
             @Suppress("DEPRECATION")
-            display.getMetrics(outMetrics)
+            display?.getMetrics(outMetrics)
         }
 
         onItemViewSelectedListener =
